@@ -35,7 +35,7 @@ In `wrangler.jsonc` the following keys and values are created:
 
 ## Customizing your MCP Server
 
-To add your own [tools](https://developers.cloudflare.com/agents/model-context-protocol/tools/) to the MCP server, define each tool inside the `init()` method of `src/index.ts` using `this.server.tool(...)`.
+To add your own [tools](https://developers.cloudflare.com/agents/model-context-protocol/tools/) to the MCP server, define each tool inside the `init()` method of `src/index.ts` using `this.server.registerTool(...)`.
 
 ## Connect to Cloudflare AI Playground
 
@@ -56,11 +56,11 @@ Update with this configuration:
 ```json
 {
   "mcpServers": {
-    "calculator": {
+    "project_planner_mcp": {
       "command": "npx",
       "args": [
         "mcp-remote",
-        "http://localhost:8787/mcp" // or remote-mcp-server-authless.your-account.workers.dev/mcp
+        "http://localhost:8787/mcp" // or remote-mcp-server.your-account.workers.dev/mcp
       ]
     }
   }
