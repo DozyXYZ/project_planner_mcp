@@ -1,7 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { McpAgent } from "agents/mcp";
 import { z } from "zod";
-import { Project, Todo } from "./utils/types/type";
+import { Project } from "./models/project";
+import { Todo } from "./models/todo";
+import { toMessageContent, toTextContent } from "./utils/response";
 
 export class MyMCP extends McpAgent {
   // Declares this MCP server's identity
@@ -74,14 +76,7 @@ export class MyMCP extends McpAgent {
         await this.kv.put("project:list", JSON.stringify(projectList));
 
         // Returns the created project as the tool's response
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(project, null, 2),
-            },
-          ],
-        };
+        return toTextContent(project);
       },
     );
 
@@ -99,14 +94,7 @@ export class MyMCP extends McpAgent {
           .filter(Boolean)
           .map((projectData) => JSON.parse(projectData!) as Project);
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(projects, null, 2),
-            },
-          ],
-        };
+        return toTextContent(projects);
       },
     );
 
@@ -126,14 +114,7 @@ export class MyMCP extends McpAgent {
         const project: Project = JSON.parse(projectData);
         const todos = await this.getTodosByProject(projectId);
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify({ project, todos }, null, 2),
-            },
-          ],
-        };
+        return toTextContent({ project, todos });
       },
     );
 
@@ -163,14 +144,10 @@ export class MyMCP extends McpAgent {
         const updatedList = projectList.filter((id) => id != projectId);
 
         await this.kv.put("project:list", JSON.stringify(updatedList));
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Project ${projectId} and all its todos have been deleted!`,
-            },
-          ],
-        };
+
+        return toMessageContent(
+          `Project ${projectId} and all its todos have been deleted!`,
+        );
       },
     );
 
@@ -218,14 +195,7 @@ export class MyMCP extends McpAgent {
           JSON.stringify(todoList),
         );
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(todo, null, 2),
-            },
-          ],
-        };
+        return toTextContent(todo);
       },
     );
 
@@ -246,14 +216,7 @@ export class MyMCP extends McpAgent {
 
         const todo: Todo = JSON.parse(todoData);
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(todo, null, 2),
-            },
-          ],
-        };
+        return toTextContent(todo);
       },
     );
 
@@ -282,14 +245,7 @@ export class MyMCP extends McpAgent {
           todos = todos.filter((todo) => todo.status === status);
         }
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(todos, null, 2),
-            },
-          ],
-        };
+        return toTextContent(todos);
       },
     );
 
@@ -328,14 +284,7 @@ export class MyMCP extends McpAgent {
 
         await this.kv.put(`todo:${todoId}`, JSON.stringify(todo));
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: JSON.stringify(todo, null, 2),
-            },
-          ],
-        };
+        return toTextContent(todo);
       },
     );
 
@@ -365,14 +314,7 @@ export class MyMCP extends McpAgent {
 
         await this.kv.delete(`todo:${todoId}`);
 
-        return {
-          content: [
-            {
-              type: "text",
-              text: `Todo ${todoId} is deleted`,
-            },
-          ],
-        };
+        return toMessageContent(`Todo ${todoId} is deleted`);
       },
     );
   }
