@@ -100,6 +100,14 @@ The following tools are registered and available via the MCP protocol:
 - `get_todo_by_id` — Get a todo by ID
 - `delete_todo` — Delete a todo from a project
 
+### SubTodo Tools
+
+- `create_subtodo` — Create a new subtodo in a todo (todoId, title, description)
+- `list_subtodo` — List all subtodos for a todo (todoId)
+- `get_subtodo_by_id` — Get a subtodo by ID (todoId, subTodoId)
+- `update_subtodo` — Update a subtodo (todoId, subTodoId, title, description, status)
+- `delete_subtodo` — Delete a subtodo from a todo (todoId, subTodoId)
+
 ---
 
 ## Usage
