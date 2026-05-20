@@ -4,6 +4,7 @@ import { ProjectRepository } from "./repositories/ProjectRepository";
 import { TodoRepository } from "./repositories/TodoRepository";
 import { registerProjectTools } from "./tools/projectTools";
 import { registerTodoTools } from "./tools/todoTools";
+import { registerSubTodoTools } from "./tools/subTodoTools";
 
 export class MyMCP extends McpAgent {
   server = new McpServer({
@@ -18,6 +19,7 @@ export class MyMCP extends McpAgent {
 
     registerProjectTools(this.server, projectRepo, todoRepo);
     registerTodoTools(this.server, projectRepo, todoRepo);
+    registerSubTodoTools(this.server, todoRepo);
   }
 }
 
