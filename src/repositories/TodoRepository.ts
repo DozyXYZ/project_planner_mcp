@@ -1,8 +1,10 @@
-import { Todo } from "../models/todo";
+import { Todo, SubTodo } from "../models/todo";
+import { McpNotFoundError } from "../utils/errors";
 
 export class TodoRepository {
   constructor(private kv: KVNamespace) {}
 
+  // Todo
   private async getIdList(projectId: string): Promise<string[]> {
     const data = await this.kv.get(`project:${projectId}:todos`);
 
@@ -66,5 +68,62 @@ export class TodoRepository {
     }
 
     await this.kv.delete(`project:${projectId}:todos`);
+  }
+
+  // SubTodo
+  async createSubTodo(todoId: string, subTodo: SubTodo): Promise<Todo> {
+    const todo = await this.findByIdOrThrow(todoId);
+
+    todo.subTodos.push(subTodo);
+    todo.updatedAt = new Date().toISOString();
+
+    await this.save(todo);
+
+    return todo;
+  }
+
+  private findSubTodoOrThrow(todo: Todo, subTodoId: string): SubTodo {
+    const subTodo = todo.subTodos.find((s) => s.id === subTodoId);
+
+    if (!subTodo) throw new McpNotFoundError("SubTodo", subTodoId);
+
+    return subTodo;
+  }
+
+  async updateSubTodo(
+    todoId: string,
+    subTodoId: string,
+    fields: {
+      title?: string;
+      description?: string;
+      status?: SubTodo["status"];
+    },
+  ): Promise<Todo> {
+    const todo = await this.findByIdOrThrow(todoId);
+    const subTodo = this.findSubTodoOrThrow(todo, subTodoId);
+
+    if (fields.title !== undefined) subTodo.title = fields.title;
+    if (fields.description !== undefined)
+      subTodo.description = fields.description;
+    if (fields.status !== undefined) subTodo.status = fields.status;
+
+    subTodo.updatedAt = new Date().toISOString();
+    todo.updatedAt = new Date().toISOString();
+
+    await this.save(todo);
+
+    return todo;
+  }
+
+  async deleteSubTodo(todoId: string, subTodoId: string): Promise<Todo> {
+    const todo = await this.findByIdOrThrow(todoId);
+    this.findSubTodoOrThrow(todo, subTodoId);
+
+    todo.subTodos = todo.subTodos.filter((s) => s.id !== subTodoId);
+    todo.updatedAt = new Date().toISOString();
+
+    await this.save(todo);
+
+    return todo;
   }
 }
