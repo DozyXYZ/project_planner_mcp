@@ -24,6 +24,7 @@ export function registerTodoTools(
           description: description || "",
           status: "pending",
           priority: priority || "medium",
+          subTodos: [],
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
